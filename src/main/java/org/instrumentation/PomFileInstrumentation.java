@@ -389,4 +389,97 @@ public class PomFileInstrumentation {
     return resource;
   }
 
+  public void removeGradleModule() throws TransformerException{
+    Document document = getPomFileAsDocument();
+
+    if(document != null){
+      document.getDocumentElement().normalize();
+
+      NodeList modulesList = document.getElementsByTagName("module");
+
+      for(int index = 0; index < modulesList.getLength(); index++){
+        Node module = modulesList.item(index).getFirstChild();
+        if(module.getTextContent().contentEquals("spring-boot-gradle-plugin")){
+          module.getParentNode().getParentNode().removeChild(module.getParentNode());
+        }
+      }
+      saveChangesOnPomFiles(document);
+    }
+  }
+
+  public void changeMavenDependencyPlugin() throws TransformerException{
+    Document document = getPomFileAsDocument();
+
+    if(document != null){
+      document.getDocumentElement().normalize();
+
+      NodeList pluginsList = document.getElementsByTagName("artifactId");
+
+      for(int index = 0; index < pluginsList.getLength(); index++){
+        Node plugin = pluginsList.item(index).getFirstChild();
+        if(plugin.getTextContent().contentEquals("maven-dependency-plugin")){
+          plugin.getParentNode().getNextSibling().getNextSibling().getFirstChild().getNextSibling().getFirstChild().getNextSibling().getNextSibling().getNextSibling().getFirstChild().setNodeValue("prepare-package");
+        }
+      }
+      saveChangesOnPomFiles(document);
+    }
+  }
+
+  public void removeCheckstylePlugin() throws TransformerException {
+    Document document = getPomFileAsDocument();
+
+    if(document != null){
+      document.getDocumentElement().normalize();
+
+      NodeList pluginsList = document.getElementsByTagName("artifactId");
+
+      for(int index = 0; index < pluginsList.getLength(); index++){
+        Node plugin = pluginsList.item(index).getFirstChild();
+        if(plugin.getTextContent().contentEquals("maven-checkstyle-plugin")){
+          Node rootPlugin = plugin.getParentNode().getParentNode();
+          rootPlugin.getParentNode().removeChild(rootPlugin);
+        }
+      }
+      saveChangesOnPomFiles(document);
+    }
+  }
+
+  public void removeAnimalSnifferPlugin() throws TransformerException {
+    Document document = getPomFileAsDocument();
+
+    if(document != null){
+      document.getDocumentElement().normalize();
+
+      NodeList pluginsList = document.getElementsByTagName("artifactId");
+
+      for(int index = 0; index < pluginsList.getLength(); index++){
+        Node plugin = pluginsList.item(index).getFirstChild();
+        if(plugin.getTextContent().contentEquals("animal-sniffer-maven-plugin")){
+          Node rootPlugin = plugin.getParentNode().getParentNode();
+          rootPlugin.getParentNode().removeChild(rootPlugin);
+        }
+      }
+      saveChangesOnPomFiles(document);
+    }
+  }
+
+  public void changeDependencyScope() throws TransformerException {
+    Document document = getPomFileAsDocument();
+
+    if(document != null){
+      document.getDocumentElement().normalize();
+
+      NodeList modulesList = document.getElementsByTagName("artifactId");
+
+      for(int index = 0; index < modulesList.getLength(); index++){
+        Node module = modulesList.item(index).getFirstChild();
+        if(module.getTextContent().contentEquals("jcl-over-slf4j")){
+          Node scope = module.getParentNode().getNextSibling().getNextSibling().getFirstChild();
+          scope.getParentNode().getParentNode().removeChild(scope.getParentNode());
+        }
+      }
+      saveChangesOnPomFiles(document);
+    }
+  }
+
 }

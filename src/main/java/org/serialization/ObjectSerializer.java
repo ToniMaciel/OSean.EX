@@ -152,7 +152,35 @@ public class ObjectSerializer {
     pomFileInstrumentation.addResourcesForGeneratedJar();
     pomFileInstrumentation.addPluginForJarWithAllDependencies();
 
+    if(isSpringBootProject(pomDirectory)){
+      String pomPath = pomDirectory.getPath();
+      String rootPath = pomPath.substring(0, pomPath.lastIndexOf("/"));
+
+      PomFileInstrumentation toolsInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot-tools");
+      toolsInstrumentation.removeGradleModule();
+      
+      PomFileInstrumentation loaderToolsInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot-tools/spring-boot-loader-tools");
+      loaderToolsInstrumentation.changeMavenDependencyPlugin();
+
+      PomFileInstrumentation parentInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot-parent");
+      parentInstrumentation.removeCheckstylePlugin();
+      parentInstrumentation.removeAnimalSnifferPlugin();
+
+      PomFileInstrumentation springBootInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot");
+      springBootInstrumentation.changeDependencyScope();
+
+      // TODO: Chamada para alterar os arquivos que quebram na compilação 
+    }
+
     return pomFileInstrumentation;
+  }
+
+  private boolean isSpringBootProject(File pomDirectory) {
+    if(pomDirectory.getAbsolutePath().contains("spring-boot")){
+      return true;
+    } else{
+      return false;
+    }
   }
 
   private ObjectSerializerClassIntrumentation createAndRunObjectSerializerInstrumentation(File file,
