@@ -482,4 +482,22 @@ public class PomFileInstrumentation {
     }
   }
 
+  public void changesUrls() throws TransformerException {
+    Document document = getPomFileAsDocument();
+  
+      if(document != null){
+        document.getDocumentElement().normalize();
+      
+        NodeList modulesList = document.getElementsByTagName("url");
+      
+        for(int index = 0; index < modulesList.getLength(); index++){
+          Node module = modulesList.item(index).getFirstChild();
+          if(module.getTextContent().contains("http://repo.spring.io/")){
+            module.setTextContent(module.getTextContent().replace("http://repo.spring.io/", "https://repo.spring.io/"));
+          }
+        }
+        saveChangesOnPomFiles(document);
+      }
+  }
+
 }

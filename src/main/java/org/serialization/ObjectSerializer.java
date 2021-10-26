@@ -13,6 +13,7 @@ import org.Transformations;
 import org.file.FileFinderSupport;
 import org.file.ObjectSerializerSupporter;
 import org.file.SerializedObjectAccessOutputClass;
+import org.file.SpringBootFileChanger;
 import org.instrumentation.ObjectSerializerClassIntrumentation;
 import org.instrumentation.PomFileInstrumentation;
 import org.instrumentation.SerializedObjectAccessClassIntrumentation;
@@ -154,7 +155,7 @@ public class ObjectSerializer {
 
     if(isSpringBootProject(pomDirectory)){
       String pomPath = pomDirectory.getPath();
-      String rootPath = pomPath.substring(0, pomPath.lastIndexOf("/"));
+      String rootPath = pomPath.substring(0, pomPath.indexOf("/spring-boot/"))+"/spring-boot";
 
       PomFileInstrumentation toolsInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot-tools");
       toolsInstrumentation.removeGradleModule();
@@ -165,11 +166,18 @@ public class ObjectSerializer {
       PomFileInstrumentation parentInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot-parent");
       parentInstrumentation.removeCheckstylePlugin();
       parentInstrumentation.removeAnimalSnifferPlugin();
+      parentInstrumentation.changesUrls();
 
       PomFileInstrumentation springBootInstrumentation = new PomFileInstrumentation(rootPath+"/spring-boot");
       springBootInstrumentation.changeDependencyScope();
 
-      // TODO: Chamada para alterar os arquivos que quebram na compilação 
+      //TODO: Chamada para alterar os arquivos que quebram na compilação 
+
+      SpringBootFileChanger springBootFileChanger = new SpringBootFileChanger();
+      springBootFileChanger.readFile(rootPath+"/spring-boot/src/main/java/org/springframework/boot/web/reactive/result/view/MustacheViewResolver.java");
+      springBootFileChanger.deleteFile(rootPath+"/spring-boot/src/test/java/org/springframework/boot/StartUpLoggerTests.java");
+      springBootFileChanger.deleteFile(rootPath+"/spring-boot/src/test/java/org/springframework/boot/logging/log4j2/ExtendedWhitespaceThrowablePatternConverterTests.java");
+
     }
 
     return pomFileInstrumentation;

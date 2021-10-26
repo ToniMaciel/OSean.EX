@@ -59,7 +59,7 @@ public class ProcessManager extends Thread {
 
   public static String getProcessOutput(Process process, boolean isTest) throws InterruptedException {
     if (isTest){
-      if (!process.waitFor(1, TimeUnit.MINUTES)){
+      if (!process.waitFor(10, TimeUnit.MINUTES)){
         process.destroy();
         return "FINISHED BY TIMEOUT";
       }else{
