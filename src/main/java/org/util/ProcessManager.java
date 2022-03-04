@@ -42,7 +42,7 @@ public class ProcessManager extends Thread {
   public String getProcessOutput(Process process, boolean isTest) throws InterruptedException {
     if (isTest){
       if (!process.waitFor(this.budget, TimeUnit.SECONDS)){
-//        process.descendants().forEach(p -> p.destroyForcibly());
+        process.descendants().forEach(p -> p.destroyForcibly());
         process.destroyForcibly();
         return "FINISHED BY TIMEOUT";
       }else{
